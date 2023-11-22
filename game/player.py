@@ -6,6 +6,7 @@ class Player(object):
     def __init__(self):
         self.position = numpy.array([0, 1, 0])
         self.yaw = -90
+        self.pitch = 0
 
     def move_to(self, position):
         self.position = position

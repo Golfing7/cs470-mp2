@@ -1,5 +1,9 @@
+from OpenGL.GL import *
+from OpenGL.GLU import *
+
 import sys
 import pygame
+
 import geometry
 import game
 import time
@@ -7,55 +11,21 @@ import numpy as np
 from game import player
 from pygame.locals import *
 
-from OpenGL.GL import *
-from OpenGL.GLU import *
 
-class Cube:
-    def __init__(self):
-        self.faces = {
-            "up": [(1, 1, 1), (1, 1, -1), (-1, 1, -1), (-1, 1, 1)],
-            "down": [(1, -1, 1), (1, -1, -1), (-1, -1, -1), (-1, -1, 1)],
-            "north": [(1, 1, 1), (1, -1, 1), (-1, -1, 1), (-1, 1, 1)],
-            "south": [(1, 1, -1), (1, -1, -1), (-1, -1, -1), (-1, 1, -1)],
-            "east": [(1, 1, 1), (1, -1, 1), (1, -1, -1), (1, 1, -1)],
-            "west": [(-1, 1, 1), (-1, -1, 1), (-1, -1, -1), (-1, 1, -1)]
-        }
-        # The colors of every face.
-        self.colors = {
-            "up": (1, 0, 0),
-            "down": (0, 1, 0),
-            "north": (0, 0, 1),
-            "south": (1, 1, 0),
-            "east": (1, 0, 1),
-            "west": (1, 1, 1)
-        }
-
-        self.rotX = 0
-        self.rotY = 0
-        self.rotZ = 0
-
-    def draw(self):
-        glPushMatrix()
-        glTranslate(-4, 0, 0)
-        glRotatef(self.rotX, 1, 0, 0)
-        glRotatef(self.rotY, 0, 1, 0)
-        glRotatef(self.rotZ, 0, 0, 1)
-
-        glEnable(GL_DEPTH_TEST)
-        glBegin(GL_QUADS)
-        for key in self.faces:
-            glMaterialfv(GL_FRONT, GL_AMBIENT, self.colors[key])
-
-            for vert in self.faces[key]:
-                glVertex3f(vert[0], vert[1], vert[2])
-        glEnd()
-        glPopMatrix()
+houses = [
+    geometry.HouseModel(np.array([0, 0, 0])),
+    geometry.HouseModel(np.array([0, 0, 15])),
+    geometry.HouseModel(np.array([15, 0, 15])),
+    geometry.HouseModel(np.array([15, 0, 0]))
+]
 
 
 def draw_scene():
+    geometry.draw_skybox()
     geometry.draw_ground_plane()
-    geometry.draw_house()
-    geometry.draw_house(position=np.array([0, 0, 15]))
+    for house in houses:
+        geometry.draw_house(house)
+
 
 def set_projection(w, h):
     """
@@ -68,14 +38,19 @@ def set_projection(w, h):
     gluPerspective(90, w / h, 0.1, 1000.0)
     glMatrixMode(GL_MODELVIEW)
 
+
 def main():
     pygame.init()
-    display = (800,800)
+    display = (800, 800)
     window = pygame.display.set_mode(display,DOUBLEBUF|OPENGL)
     set_projection(*window.get_size())
-    cube = Cube()
     last_tick = 0
     pygame.mouse.set_visible(False)
+    pygame.event.set_grab(True)
+    game_obj = game.GAME
+
+    day_light = [0.4, 0.4, 0.4, 0]
+    night_light = [0.02, 0.02, 0.02, 0]
 
     while True:
         for event in pygame.event.get():
@@ -83,26 +58,39 @@ def main():
                 pygame.quit()
                 quit()
                 sys.exit()
-            game.handle_input(event)
 
-        pygame.mouse.set_pos(window.get_width() / 2, window.get_height() / 2)
+            if event.type == pygame.KEYDOWN:
+                if event.key == ord('o'):
+                    for house in houses:
+                        distance = np.linalg.norm(house.position - player.PLAYER_OBJECT.position)
+                        if distance < 5:
+                            house.doorOpen = not house.doorOpen
+            game.handle_input(game_obj, event)
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Perform the offset for the camera
         glLoadIdentity()
         glClearColor(0., 0.5, 0.75, 0.)
-        glShadeModel(GL_SMOOTH)
+        glShadeModel(GL_FLAT)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
+        glEnable(GL_BLEND)
         glEnable(GL_LIGHT1)
         glEnable(GL_DEPTH_TEST)
         glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
         glTranslatef(*-player.PLAYER_OBJECT.position)
-        glLightfv(GL_LIGHT0, GL_POSITION, [0, 10, 0, 1])
-        glLightfv(GL_LIGHT1, GL_AMBIENT, [0.2, 0.2, 0.2, 0])
+        light_diffuse = [0.6, 0.6, 0.6, 1.0]
+        light_specular = [0.4, 0.4, 0.4, 1.0]
+        light_position = [0, 10, 0, 0.0]
+
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
+        glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+
+        glLightfv(GL_LIGHT1, GL_AMBIENT, day_light if game_obj.day else night_light)
 
         # Draw scene
-        cube.draw()
         draw_scene()
 
         pygame.display.flip()
@@ -115,4 +103,5 @@ def main():
         pygame.time.wait(10)
 
 
-main()
+if __name__ == '__main__':
+    main()
