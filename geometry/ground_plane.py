@@ -9,16 +9,6 @@ def draw_ground_plane(position=np.zeros(3)) -> None:
     import textures
     glPushMatrix()
     glEnable(GL_TEXTURE_2D)
-    glEnable(GL_BLEND)
-    no_mat = [1, 1, 1, 1.0]
-    mat_diffuse = [0.7, 0.7, 0.7, 1.0]
-    no_shininess = [0.0]
-    mat_emission = [0.2, 0.2, 0.2, 0.0]
-    glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat)
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
-    glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat)
-    glMaterialfv(GL_FRONT, GL_SHININESS, no_shininess)
-    glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission)
     glBindTexture(GL_TEXTURE_2D, textures.GRASS)
     glBegin(GL_QUADS)
 

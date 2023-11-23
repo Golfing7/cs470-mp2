@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from OpenGL.GLUT import *
 
 import sys
 import pygame
@@ -13,9 +14,9 @@ from pygame.locals import *
 
 
 houses = [
-    geometry.HouseModel(np.array([0, 0, 0])),
-    geometry.HouseModel(np.array([0, 0, 15])),
-    geometry.HouseModel(np.array([15, 0, 15])),
+    geometry.HouseModel(np.array([0, 0, 0]), scale=np.array([1.25, 1.25, 1.25])),
+    geometry.HouseModel(np.array([0, 0, 15]), angle=180, scale=np.array([1.5, 1.5, 1.5])),
+    geometry.HouseModel(np.array([15, 0, 15]), angle=180),
     geometry.HouseModel(np.array([15, 0, 0]))
 ]
 
@@ -48,6 +49,8 @@ def main():
     pygame.mouse.set_visible(False)
     pygame.event.set_grab(True)
     game_obj = game.GAME
+    for house in houses:
+        game_obj.add_game_object(house)
 
     day_light = [0.4, 0.4, 0.4, 0]
     night_light = [0.02, 0.02, 0.02, 0]
@@ -60,11 +63,11 @@ def main():
                 sys.exit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == ord('o'):
+                if event.key == ord('e'):
                     for house in houses:
                         distance = np.linalg.norm(house.position - player.PLAYER_OBJECT.position)
                         if distance < 5:
-                            house.doorOpen = not house.doorOpen
+                            house.toggle_door()
             game.handle_input(game_obj, event)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -72,10 +75,9 @@ def main():
         # Perform the offset for the camera
         glLoadIdentity()
         glClearColor(0., 0.5, 0.75, 0.)
-        glShadeModel(GL_FLAT)
+        glShadeModel(GL_SMOOTH)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
-        glEnable(GL_BLEND)
         glEnable(GL_LIGHT1)
         glEnable(GL_DEPTH_TEST)
         glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
@@ -84,11 +86,14 @@ def main():
         light_specular = [0.4, 0.4, 0.4, 1.0]
         light_position = [0, 10, 0, 0.0]
 
+        glLightfv(GL_LIGHT0, GL_AMBIENT, [0, 0, 0, 1])
         glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
         glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
         glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-
         glLightfv(GL_LIGHT1, GL_AMBIENT, day_light if game_obj.day else night_light)
+
+        for obj in game_obj.game_objects:
+            obj.tick()
 
         # Draw scene
         draw_scene()
