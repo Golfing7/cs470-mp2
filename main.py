@@ -24,6 +24,10 @@ pyramids = [
     geometry.PyramidModel(np.array([50, 0, 50]), angle=45, scale=np.array([5, 5, 5]))
 ]
 
+trees = [
+    geometry.BasicModel(np.array([-5, 0, -5]))
+]
+
 human = geometry.HumanModel(np.array([5, 0, 0]))
 
 
@@ -35,6 +39,8 @@ def draw_scene():
     for pyramid in pyramids:
         geometry.draw_pyramid(pyramid)
     geometry.draw_human(human)
+    for tree in trees:
+        geometry.draw_tree(tree)
 
 
 def set_projection(w, h):

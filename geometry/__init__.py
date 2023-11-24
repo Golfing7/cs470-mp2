@@ -3,3 +3,5 @@ from .house import draw_house, HouseModel
 from .skybox import draw_skybox
 from .pyramid import draw_pyramid, PyramidModel
 from .human import draw_human, HumanModel
+from .model import Model, BasicModel
+from .tree import draw_tree

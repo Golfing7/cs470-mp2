@@ -70,30 +70,74 @@ class HumanModel(model.Model, game_object.GameObject):
 
 def draw_head(human: HumanModel) -> None:
     # Draw the head.
+    glPushMatrix()
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [1, 1, 0, 1.])
     glTranslatef(0, 1.5, 0)
     glRotatef(-90, 1, 0, 0)
     glutSolidCylinder(0.25, 0.5, 50, 50)
+    glPopMatrix()
+
+    # Draw the ears
+    glPushMatrix()
+    glTranslatef(0, 1.75, -0.25)
+    glutSolidSphere(0.1, 5, 5)
+    glPopMatrix()
+    glPushMatrix()
+    glTranslatef(0, 1.75, 0.25)
+    glutSolidSphere(0.1, 20, 20)
+    glPopMatrix()
+
+    # Draw the eyes
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [1, 1, 1, 1.])
+    glPushMatrix()
+    glTranslatef(-0.25, 1.75, -0.125)
+    glutSolidSphere(0.05, 5, 5)
+    glPopMatrix()
+    glPushMatrix()
+    glTranslatef(-0.25, 1.75, 0.125)
+    glutSolidSphere(0.05, 20, 20)
+    glPopMatrix()
 
 
 def draw_torso(human: HumanModel) -> None:
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 0, 1, 1.])
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0.7, 1.])
+    glMaterialfv(GL_FRONT, GL_SPECULAR, [0, 0, 0, 1.])
+    glMaterialfv(GL_FRONT, GL_SHININESS, [0.])
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0, 0, 0.2, 0])
     glTranslatef(0, 1, 0)
     glScalef(0.5, 1, 1)
     glutSolidCube(1)
 
 
 def draw_leg(human: HumanModel, offset) -> None:
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 0, 1, 1.])
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0.7, 1.])
+    glMaterialfv(GL_FRONT, GL_SPECULAR, [0, 0, 0, 1.])
+    glMaterialfv(GL_FRONT, GL_SHININESS, [0.])
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0, 0, 0.2, 0])
     glTranslatef(*offset)
     glScalef(0.25, 1, 0.25)
     glutSolidCube(1)
 
 
 def draw_left_arm(human: HumanModel) -> None:
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 0, 1, 1.])
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0.7, 1.])
+    glMaterialfv(GL_FRONT, GL_SPECULAR, [0, 0, 0, 1.])
+    glMaterialfv(GL_FRONT, GL_SHININESS, [0.])
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0, 0, 0.2, 0])
     glTranslatef(0, 1, 0.6325)
     glScalef(0.25, 1, 0.25)
     glutSolidCube(1)
 
 
 def draw_right_arm(human: HumanModel) -> None:
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 0, 1, 1.])
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, [0, 0, 0.7, 1.])
+    glMaterialfv(GL_FRONT, GL_SPECULAR, [0, 0, 0, 1.])
+    glMaterialfv(GL_FRONT, GL_SHININESS, [0.])
+    glMaterialfv(GL_FRONT, GL_EMISSION, [0, 0, 0.2, 0])
     glTranslatef(0, 1.5, -0.6325)
     glRotatef(human.right_arm_angle, 1, 0, 0)
     glTranslatef(0, -0.5, 0)
@@ -104,6 +148,18 @@ def draw_right_arm(human: HumanModel) -> None:
 
 
 def draw_human(human: HumanModel) -> None:
+    glPushMatrix()
+
+    no_mat = [0, 0, 0, 1.0]
+    mat_diffuse = [0.7, 0.7, 0.7, 1.0]
+    no_shininess = [0.0]
+    mat_emission = [0.2, 0.2, 0.2, 0.0]
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0.7, 0.7, 0.7, 1.])
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
+    glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat)
+    glMaterialfv(GL_FRONT, GL_SHININESS, no_shininess)
+    glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission)
+
     glTranslatef(*human.position)
     glRotatef(human.angle, 0, 1, 0)
     glScalef(*human.scale)
@@ -129,4 +185,5 @@ def draw_human(human: HumanModel) -> None:
 
     glPushMatrix()
     draw_right_arm(human)
+    glPopMatrix()
     glPopMatrix()

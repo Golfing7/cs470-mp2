@@ -26,6 +26,13 @@ def handle_kd(key, x, y):
     if is_key_pressed('n'):
         game_obj.day = not game_obj.day
 
+    if is_key_pressed('e'):
+        for obj in game_obj.game_objects:
+            difference = player.PLAYER_OBJECT.position - obj.position
+            distance = np.linalg.norm(difference)
+            if distance < 5:
+                obj.interact()
+
 
 def handle_ku(key, x, y):
     keys_pressed[key] = False

@@ -31,7 +31,7 @@ class HouseModel(model.Model, game_object.GameObject):
         else:
             self.doorLerp = max(0, self.doorLerp - 1)
 
-    def toggle_door(self):
+    def interact(self):
         self.doorOpen = not self.doorOpen
 
     def get_door_angle(self):
