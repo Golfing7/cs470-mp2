@@ -20,12 +20,21 @@ houses = [
     geometry.HouseModel(np.array([15, 0, 0]))
 ]
 
+pyramids = [
+    geometry.PyramidModel(np.array([50, 0, 50]), angle=45, scale=np.array([5, 5, 5]))
+]
+
+human = geometry.HumanModel(np.array([5, 0, 0]))
+
 
 def draw_scene():
     geometry.draw_skybox()
     geometry.draw_ground_plane()
     for house in houses:
         geometry.draw_house(house)
+    for pyramid in pyramids:
+        geometry.draw_pyramid(pyramid)
+    geometry.draw_human(human)
 
 
 def set_projection(w, h):
@@ -40,72 +49,69 @@ def set_projection(w, h):
     glMatrixMode(GL_MODELVIEW)
 
 
+def run_loop():
+    set_projection(800, 800)
+
+    game_obj = game.GAME
+    day_light = [0.4, 0.4, 0.4, 0]
+    night_light = [0.02, 0.02, 0.02, 0]
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+    # Perform the offset for the camera
+    glLoadIdentity()
+    glClearColor(0., 0.5, 0.75, 0.)
+    glShadeModel(GL_SMOOTH)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT1)
+    glEnable(GL_DEPTH_TEST)
+    glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
+    glTranslatef(*-player.PLAYER_OBJECT.position)
+    light_diffuse = [0.6, 0.6, 0.6, 1.0]
+    light_specular = [0.4, 0.4, 0.4, 1.0]
+    light_position = [0, 10, 0, 0.0]
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position)
+    glLightfv(GL_LIGHT1, GL_AMBIENT, day_light if game_obj.day else night_light)
+
+    for obj in game_obj.game_objects:
+        obj.tick()
+
+    if np.linalg.norm(player.PLAYER_OBJECT.position - human.position) < 2:
+        human.start_waving()
+
+    game.tick()
+
+    # Draw scene
+    draw_scene()
+    glutSwapBuffers()
+
+
+def timer(time_thing):
+    glutPostRedisplay()
+    glutTimerFunc(ctypes.c_int(10), timer, 0)
+
+
 def main():
-    pygame.init()
-    display = (800, 800)
-    window = pygame.display.set_mode(display,DOUBLEBUF|OPENGL)
-    set_projection(*window.get_size())
-    last_tick = 0
-    pygame.mouse.set_visible(False)
-    pygame.event.set_grab(True)
     game_obj = game.GAME
     for house in houses:
         game_obj.add_game_object(house)
-
-    day_light = [0.4, 0.4, 0.4, 0]
-    night_light = [0.02, 0.02, 0.02, 0]
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-                sys.exit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == ord('e'):
-                    for house in houses:
-                        distance = np.linalg.norm(house.position - player.PLAYER_OBJECT.position)
-                        if distance < 5:
-                            house.toggle_door()
-            game.handle_input(game_obj, event)
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        # Perform the offset for the camera
-        glLoadIdentity()
-        glClearColor(0., 0.5, 0.75, 0.)
-        glShadeModel(GL_SMOOTH)
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHT1)
-        glEnable(GL_DEPTH_TEST)
-        glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
-        glTranslatef(*-player.PLAYER_OBJECT.position)
-        light_diffuse = [0.6, 0.6, 0.6, 1.0]
-        light_specular = [0.4, 0.4, 0.4, 1.0]
-        light_position = [0, 10, 0, 0.0]
-
-        glLightfv(GL_LIGHT0, GL_AMBIENT, [0, 0, 0, 1])
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
-        glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
-        glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-        glLightfv(GL_LIGHT1, GL_AMBIENT, day_light if game_obj.day else night_light)
-
-        for obj in game_obj.game_objects:
-            obj.tick()
-
-        # Draw scene
-        draw_scene()
-
-        pygame.display.flip()
-
-        # Tick game
-        if time.time_ns() - last_tick > (1000000000 / 144):
-            last_tick = time.time_ns()
-            game.tick()
-
-        pygame.time.wait(10)
+    game_obj.add_game_object(human)
+    glutInit()
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
+    glutInitWindowSize(800, 800)
+    glutInitWindowPosition(100, 100)
+    glutCreateWindow(b"A house")
+    glutDisplayFunc(run_loop)
+    glutKeyboardFunc(game.handle_kd)
+    glutSpecialFunc(game.handle_kd)
+    glutKeyboardUpFunc(game.handle_ku)
+    glutSpecialUpFunc(game.handle_ku)
+    timer(1)
+    glutMainLoop()
 
 
 if __name__ == '__main__':

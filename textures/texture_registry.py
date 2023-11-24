@@ -26,8 +26,9 @@ def read_texture(filename):
 GRASS = read_texture('grass.jpg')
 STONE = read_texture('stoned.jpg')
 BLACK_CONCRETE_POWDER = read_texture('black_concrete_powder.png')
+SANDSTONE = read_texture('sandstone.jpg')
+
 LANDSCAPE_DAY = read_texture('landscape_day.png')
 LANDSCAPE_NIGHT = read_texture('landscape_night.png')
-
 SKY_DAY = read_texture('sky_day.png')
 SKY_NIGHT = read_texture('sky_night.png')

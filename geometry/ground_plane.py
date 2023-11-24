@@ -8,6 +8,7 @@ def draw_ground_plane(position=np.zeros(3)) -> None:
     """
     import textures
     glPushMatrix()
+    glMaterialfv(GL_FRONT, GL_AMBIENT, [0.7, 0.7, 0.7, 1.])
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, textures.GRASS)
     glBegin(GL_QUADS)
