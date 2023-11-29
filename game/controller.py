@@ -60,5 +60,13 @@ def tick():
     if is_key_pressed(GLUT_KEY_RIGHT):
         player.PLAYER_OBJECT.yaw += 3
 
+    if is_key_pressed(GLUT_KEY_UP):
+        player.PLAYER_OBJECT.pitch += 3
+        player.PLAYER_OBJECT.pitch = min(90, player.PLAYER_OBJECT.pitch)
+
+    if is_key_pressed(GLUT_KEY_DOWN):
+        player.PLAYER_OBJECT.pitch -= 3
+        player.PLAYER_OBJECT.pitch = max(-90, player.PLAYER_OBJECT.pitch)
+
     if is_key_pressed('q'):
         sys.exit()

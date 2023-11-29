@@ -71,8 +71,11 @@ def run_loop():
     glEnable(GL_LIGHT0)
     glEnable(GL_LIGHT1)
     glEnable(GL_DEPTH_TEST)
+    glMatrixMode(GL_PROJECTION)
+    glRotate(-player.PLAYER_OBJECT.pitch, 1, 0, 0)
     glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
     glTranslatef(*-player.PLAYER_OBJECT.position)
+    glMatrixMode(GL_MODELVIEW)
     light_diffuse = [0.6, 0.6, 0.6, 1.0]
     light_specular = [0.4, 0.4, 0.4, 1.0]
     light_position = [0, 10, 0, 0.0]
