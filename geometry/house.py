@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from game import player
-from geometry import model
+from geometry import model, util
 from game import game_object
 import numpy as np
 
@@ -43,7 +43,7 @@ def draw_door(house: HouseModel) -> None:
     glTranslatef(-DOOR_WIDTH, 0, HOUSE_WIDTH)
     glRotatef(house.get_door_angle(), 0, 1, 0)
 
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [0., 0., 1., 1.])
+    util.set_mat([0, 0, 1, 1])
     glBegin(GL_QUADS)
 
     # Draw door
@@ -122,7 +122,7 @@ def draw_house(house: HouseModel) -> None:
     glPushMatrix()
 
     # Continue drawing
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [1., 1., 0., 1.])
+    util.set_mat([1, 1, 0, 1])
     glTranslatef(*house.position)
     glRotatef(house.angle, 0, 1, 0)
     glScalef(*house.scale)
@@ -131,13 +131,13 @@ def draw_house(house: HouseModel) -> None:
     draw_north_wall(house)
 
     # South wall
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [1., 1., 0., 1.])
+    util.set_mat([1, 1, 0, 1])
     draw_windowed_wall(house, 180)
     # East wall
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 1., 0., 1.])
+    util.set_mat([0, 1, 0, 1])
     draw_windowed_wall(house, 90)
     # West wall
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [0, 1., 1., 1.])
+    util.set_mat([0, 1, 1, 1])
     draw_windowed_wall(house, -90)
     glPopMatrix()
 
@@ -147,7 +147,7 @@ def draw_house(house: HouseModel) -> None:
     glRotatef(house.angle, 0, 1, 0)
     glScalef(*house.scale)
     glBegin(GL_QUADS)
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [1., 0., 0., 1.])
+    util.set_mat([1, 0, 0, 1])
     # West facing
     glVertex3fv([-HOUSE_WIDTH, HOUSE_HEIGHT, HOUSE_WIDTH])
     glVertex3fv([-HOUSE_WIDTH, HOUSE_HEIGHT, -HOUSE_WIDTH])

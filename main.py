@@ -20,6 +20,13 @@ houses = [
     geometry.HouseModel(np.array([15, 0, 0]))
 ]
 
+house_lights = [
+    GL_LIGHT2,
+    GL_LIGHT3,
+    GL_LIGHT4,
+    GL_LIGHT5
+]
+
 pyramids = [
     geometry.PyramidModel(np.array([50, 0, 50]), angle=45, scale=np.array([5, 5, 5]))
 ]
@@ -59,13 +66,13 @@ def run_loop():
     set_projection(800, 800)
 
     game_obj = game.GAME
-    day_light = [0.4, 0.4, 0.4, 0]
-    night_light = [0.02, 0.02, 0.02, 0]
+    day_light = [0.4, 0.4, 0.4, 1]
+    night_light = [0.02, 0.02, 0.02, 1]
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     # Perform the offset for the camera
     glLoadIdentity()
-    glClearColor(0., 0.5, 0.75, 0.)
+    glClearColor(0., 0., 0., 0.)
     glShadeModel(GL_SMOOTH)
     glEnable(GL_LIGHTING)
     glEnable(GL_LIGHT0)
@@ -76,15 +83,29 @@ def run_loop():
     glRotate(player.PLAYER_OBJECT.yaw, 0, 1, 0)
     glTranslatef(*-player.PLAYER_OBJECT.position)
     glMatrixMode(GL_MODELVIEW)
-    light_diffuse = [0.6, 0.6, 0.6, 1.0]
-    light_specular = [0.4, 0.4, 0.4, 1.0]
-    light_position = [0, 10, 0, 0.0]
+    light_ambient = [0.0, 0.0, 0.0, 1.0]
+    light_diffuse = [0.7, 0.7, 0.7, 1.0]
+    light_specular = [0.3, 0.3, 0.3, 1.0]
+    light_position = [10.0, 100.0, 10.0, 1.0]
 
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0, 0, 0, 1])
+    glLightfv(GL_LIGHT0, GL_AMBIENT, day_light if game_obj.day else night_light)
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse)
     glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular)
     glLightfv(GL_LIGHT0, GL_POSITION, light_position)
-    glLightfv(GL_LIGHT1, GL_AMBIENT, day_light if game_obj.day else night_light)
+
+    if not game_obj.day:
+        for i, light_id in enumerate(house_lights):
+            glEnable(light_id)
+
+            house = houses[i]
+            light_position = [house.position[0], house.position[1] + 0.5, house.position[2], 1.0]
+            glLightfv(light_id, GL_AMBIENT, [0.0, 0.0, 0.0, 1.0])
+            glLightfv(light_id, GL_DIFFUSE, [0.15, 0.15, 0.01, 1])
+            glLightfv(light_id, GL_SPECULAR, [0.0, 0.0, 0.0, 1])
+            glLightfv(light_id, GL_POSITION, light_position)
+    else:
+        for i, light_id in enumerate(house_lights):
+            glDisable(light_id)
 
     for obj in game_obj.game_objects:
         obj.tick()

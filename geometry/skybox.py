@@ -1,5 +1,6 @@
 from OpenGL.GL import *
 import numpy as np
+from geometry import model, util
 import game
 
 
@@ -9,15 +10,7 @@ def draw_skybox(position=np.zeros(3)) -> None:
     """
     import textures
     glEnable(GL_TEXTURE_2D)
-    no_mat = [1, 1, 1, 1.0]
-    mat_diffuse = [0.7, 0.7, 0.7, 1.0]
-    no_shininess = [0.0]
-    mat_emission = [0.2, 0.2, 0.2, 0.0]
-    glMaterialfv(GL_FRONT, GL_AMBIENT, no_mat)
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse)
-    glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat)
-    glMaterialfv(GL_FRONT, GL_SHININESS, no_shininess)
-    glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission)
+    util.set_mat([1, 1, 1, 1])
     glBindTexture(GL_TEXTURE_2D, textures.LANDSCAPE_DAY if game.GAME.day else textures.LANDSCAPE_NIGHT)
     angle = 0
 

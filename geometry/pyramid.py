@@ -2,7 +2,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from game import game_object
-from geometry import model
+from geometry import model, util
 import numpy as np
 
 
@@ -19,7 +19,7 @@ def draw_pyramid(model: model.Model) -> None:
     glPushMatrix()
 
     glEnable(GL_TEXTURE_2D)
-    glMaterialfv(GL_FRONT, GL_AMBIENT, [1, 1, 1, 1.])
+    util.set_mat([0.7, 0.7, 0.7, 1.])
     glBindTexture(GL_TEXTURE_2D, textures.SANDSTONE)
     glTranslatef(*model.position)
     glRotatef(model.angle, 0, 1, 0)
