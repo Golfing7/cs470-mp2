@@ -32,7 +32,7 @@ pyramids = [
 ]
 
 trees = [
-    geometry.BasicModel(np.array([-5, 0, -5]))
+    geometry.BasicModel(np.array([-5, 0, 7.5]))
 ]
 
 human = geometry.HumanModel(np.array([5, 0, 0]))
