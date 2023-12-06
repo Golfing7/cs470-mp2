@@ -38,6 +38,24 @@ class HouseModel(model.Model, game_object.GameObject):
         return self.doorLerp
 
 
+def draw_furniture(house: HouseModel) -> None:
+    glPushMatrix()
+    glTranslate(0, 0.5, 0)
+    glScalef(1, 0.05, 1)
+    glutSolidCube(1)
+    glPopMatrix()
+
+    glPushMatrix()
+    for i in range(0, 4):
+        glPushMatrix()
+        glRotatef(i * 90, 0, 1, 0)
+        glTranslatef(0.45, 0, 0.45)
+        glRotatef(90, -1, 0, 0)
+        glutSolidCylinder(0.05, 0.5, 5, 5)
+        glPopMatrix()
+    glPopMatrix()
+
+
 def draw_door(house: HouseModel) -> None:
     glPushMatrix()
     glTranslatef(-DOOR_WIDTH, 0, HOUSE_WIDTH)
@@ -126,6 +144,9 @@ def draw_house(house: HouseModel) -> None:
     glTranslatef(*house.position)
     glRotatef(house.angle, 0, 1, 0)
     glScalef(*house.scale)
+
+    # Furniture
+    draw_furniture(house)
 
     # North wall
     draw_north_wall(house)

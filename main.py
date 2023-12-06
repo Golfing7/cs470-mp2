@@ -28,7 +28,7 @@ house_lights = [
 ]
 
 pyramids = [
-    geometry.PyramidModel(np.array([50, 0, 50]), angle=45, scale=np.array([5, 5, 5]))
+    geometry.PyramidModel(np.array([-20, 0, 7.5]), angle=0, scale=np.array([10, 10, 10]))
 ]
 
 trees = [
@@ -101,7 +101,7 @@ def run_loop():
             light_position = [house.position[0], house.position[1] + 0.5, house.position[2], 1.0]
             glLightfv(light_id, GL_AMBIENT, [0.0, 0.0, 0.0, 1.0])
             glLightfv(light_id, GL_DIFFUSE, [0.15, 0.15, 0.01, 1])
-            glLightfv(light_id, GL_SPECULAR, [0.0, 0.0, 0.0, 1])
+            glLightfv(light_id, GL_SPECULAR, [0.15, 0.15, 0.01, 1])
             glLightfv(light_id, GL_POSITION, light_position)
     else:
         for i, light_id in enumerate(house_lights):

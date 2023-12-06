@@ -4,7 +4,7 @@ import numpy
 
 class Player(object):
     def __init__(self):
-        self.position = numpy.array([0, 1, 0])
+        self.position = numpy.array([25, 1, 7.5])
         self.yaw = -90
         self.pitch = 0
 
